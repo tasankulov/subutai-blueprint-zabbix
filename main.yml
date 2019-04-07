@@ -1,0 +1,87 @@
+---
+
+- hosts: zabbix
+  remote_user: root
+  tasks:
+
+    # - name: Upgrade debian
+    #   apt:
+    #     update_cache: true
+    #     upgrade: true
+
+    - name: Download zabbix-repo.deb
+      get_url:
+        url: https://repo.zabbix.com/zabbix/4.0/debian/pool/main/z/zabbix-release/zabbix-release_4.0-2+stretch_all.deb
+        dest: /tmp/zabbix-repo.deb
+
+    - name: Add zabbix-repo
+      apt:
+        deb: /tmp/zabbix-repo.deb
+        update_cache: yes
+
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
+
+    - name: Install required debs
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars: 
+        packages:
+        - zabbix-server-mysql
+        - zabbix-frontend-php
+        - python-mysqldb
+
+    - name: Create a new database 'zabbix'
+      mysql_db:
+        name: zabbix
+        encoding: utf8
+        collation: utf8_bin
+        state: present
+
+    - name: Create zabbix db user
+      mysql_user:
+        name: zabbix
+        password: "{{ zabbix_db_password }}"
+        priv: 'zabbix.*:ALL'
+        state: present
+
+    - name: Import initial schema and data for the server
+      shell: zcat /usr/share/doc/zabbix-server-mysql/create.sql.gz | mysql -uzabbix -p{{ zabbix_db_password }} zabbix
+
+    - name: Configure database for Zabbix server
+      lineinfile: 
+        dest: /etc/zabbix/zabbix_server.conf
+        regexp: ^# DBPassword=
+        line: DBPassword={{ zabbix_db_password }}
+
+    - name: Setting the time zone
+      lineinfile: 
+        dest: /etc/apache2/conf-enabled/zabbix.conf
+        regexp: '^\s php_value date.timezone Europe/Riga'
+        line: php_value date.timezone {{ timezone }}
+
+    - name: Changing web access URL
+      lineinfile: 
+        dest: /etc/apache2/sites-available/000-default.conf
+        regexp: '^\sDocumentRoot /var/www/html'
+        line: DocumentRoot /usr/share/zabbix
+
+    - name: Start zabbix
+      systemd: 
+        name: zabbix-server.service
+        state: started
+
+    - name: Enable zabbix-server.service
+      systemd: 
+        name: zabbix-server.service
+        enabled: yes
+
+    - name: Restart apache2
+      systemd: 
+        name: apache2.service
+        state: restarted
+
+

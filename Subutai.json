@@ -1,0 +1,89 @@
+{
+    "name": "${environmentName}",
+    "description": "Zabbix",
+    "version": "2.164.1",
+    "author": "https://github.com/tasankulov",
+    "containers": [{
+        "hostname": "${webContainerName}",
+        "template": "debian-stretch",
+        "peer-criteria": "HTTP-GROUP",
+        "size": "${containerSize}",
+        "port-mapping": [{
+                "protocol": "https",
+                "domain": "${domainName}",
+                "internal-port": "80",
+                "external-port": "443"
+            },
+            {
+                "protocol": "tcp",
+                "domain": "${domainName}",
+                "internal-port": "10050",
+                "external-port": "10050"
+            },
+            {
+                "protocol": "tcp",
+                "domain": "${domainName}",
+                "internal-port": "10051",
+                "external-port": "10051"
+            }
+        ]
+    }],
+    "peer-criteria": [{
+        "name": "HTTP-GROUP"
+    }],
+    "ansible-configuration": {
+        "source-url": "https://github.com/tasankulov/subutai-blueprint-jenkins/archive/master.zip",
+        "ansible-playbook": "main.yml",
+        "extra-vars": [{
+                "key": "zabbix_db_password",
+                "value": "${DBPwd}"
+            },
+            {
+                "key": "timezone",
+                "value": "${datetimezone}"
+            }
+        ],
+        "groups": [{
+            "name": "jenkins",
+            "hostnames": [
+                "${webContainerName}"
+            ]
+        }]
+    },
+    "user-variables": {
+        "environmentName": {
+            "description": "Enter the environment name",
+            "type": "string",
+            "default": "zabbix",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "domainName": {
+            "description": "Enter the application domain name",
+            "type": "domain",
+            "default": "change.the.domain",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "DBPwd": {
+            "description": "Zabbix database password",
+            "type": "string",
+            "default": "ZabbixAdmin"
+        },
+        "datetimezone": {
+            "description": "Time zone",
+            "type": "string",
+            "default": "Asia/Bishkek"
+        },
+        "webContainerName": {
+            "description": "Enter the container's hostname",
+            "type": "string",
+            "default": "zabbix",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "containerSize": {
+            "description": "Container Size",
+            "type": "enum",
+            "default": "TINY",
+            "validation": "TINY,SMALL,MEDIUM,LARGE,HUGE"
+        }
+    }
+}
