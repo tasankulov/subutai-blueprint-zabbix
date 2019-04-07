@@ -4,10 +4,16 @@
   remote_user: root
   tasks:
 
-    # - name: Upgrade debian
-    #   apt:
-    #     update_cache: true
-    #     upgrade: true
+    - name: Install ca-certificates
+      apt:
+        name: ca-certificates
+        state: present
+        update_cache: true
+
+    - name: Upgrade debian
+      apt:
+        update_cache: true
+        upgrade: true
 
     - name: Download zabbix-repo.deb
       get_url:
@@ -18,11 +24,6 @@
       apt:
         deb: /tmp/zabbix-repo.deb
         update_cache: yes
-
-    - name: Upgrade debian
-      apt:
-        update_cache: true
-        upgrade: true
 
     - name: Install required debs
       apt:
