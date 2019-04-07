@@ -31,7 +31,7 @@
             }
         ],
         "groups": [{
-            "name": "jenkins",
+            "name": "zabbix",
             "hostnames": [
                 "${webContainerName}"
             ]
