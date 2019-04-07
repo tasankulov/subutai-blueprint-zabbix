@@ -32,7 +32,7 @@
         "name": "HTTP-GROUP"
     }],
     "ansible-configuration": {
-        "source-url": "https://github.com/tasankulov/subutai-blueprint-jenkins/archive/master.zip",
+        "source-url": "https://github.com/tasankulov/subutai-blueprint-zabbix.git",
         "ansible-playbook": "main.yml",
         "extra-vars": [{
                 "key": "zabbix_db_password",
