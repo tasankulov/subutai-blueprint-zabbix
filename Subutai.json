@@ -9,24 +9,11 @@
         "peer-criteria": "HTTP-GROUP",
         "size": "${containerSize}",
         "port-mapping": [{
-                "protocol": "https",
-                "domain": "${domainName}",
-                "internal-port": "80",
-                "external-port": "443"
-            },
-            {
-                "protocol": "tcp",
-                "domain": "${domainName}",
-                "internal-port": "10050",
-                "external-port": "10050"
-            },
-            {
-                "protocol": "tcp",
-                "domain": "${domainName}",
-                "internal-port": "10051",
-                "external-port": "10051"
-            }
-        ]
+            "protocol": "https",
+            "domain": "${domainName}",
+            "internal-port": "80",
+            "external-port": "443"
+        }]
     }],
     "peer-criteria": [{
         "name": "HTTP-GROUP"
