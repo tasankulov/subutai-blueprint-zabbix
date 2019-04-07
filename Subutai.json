@@ -1,7 +1,7 @@
 {
     "name": "${environmentName}",
     "description": "Zabbix",
-    "version": "2.164.1",
+    "version": "4.0",
     "author": "https://github.com/tasankulov",
     "containers": [{
         "hostname": "${webContainerName}",
